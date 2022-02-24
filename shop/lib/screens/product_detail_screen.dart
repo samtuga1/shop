@@ -4,7 +4,6 @@ import 'package:shop/providers/products.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   static String id = '/product_detail_screen';
-  // final String title;
   const ProductDetailScreen({Key? key}) : super(key: key);
 
   @override

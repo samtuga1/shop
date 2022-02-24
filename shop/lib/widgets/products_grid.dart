@@ -4,14 +4,16 @@ import '../widgets/product_item.dart';
 import 'package:provider/provider.dart';
 
 class ProductsGrid extends StatelessWidget {
+  final bool showFavs;
   const ProductsGrid({
     Key? key,
+    required this.showFavs,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final productData = Provider.of<Products>(context);
-    final products = productData.items;
+    final products = showFavs ? productData.favoriteItems : productData.items;
     return GridView.builder(
       padding: const EdgeInsets.all(20),
       itemCount: products.length,
@@ -21,10 +23,9 @@ class ProductsGrid extends StatelessWidget {
         mainAxisSpacing: 10,
         crossAxisSpacing: 10,
       ),
-      itemBuilder: (ctx, i) => ProductItem(
-        id: products[i].id,
-        title: products[i].title,
-        imageUrl: products[i].imageUrl,
+      itemBuilder: (ctx, i) => ChangeNotifierProvider.value(
+        value: products[i],
+        child: const ProductItem(),
       ),
     );
   }
