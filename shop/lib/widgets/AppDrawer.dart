@@ -1,0 +1,41 @@
+import 'package:flutter/material.dart';
+import 'package:shop/screens/orders.screen.dart';
+import '../screens/products_overview_screen.dart';
+
+class AppDrawer extends StatelessWidget {
+  const AppDrawer({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      child: Column(
+        children: [
+          AppBar(
+            title: const Text('Hello friend!'),
+            automaticallyImplyLeading: false,
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          ListTile(
+            leading: const Icon(Icons.shop),
+            title: const Text('Shop'),
+            onTap: () {
+              Navigator.of(context)
+                  .pushReplacementNamed(ProductsOverviewScreen.routeName);
+            },
+          ),
+          const Divider(),
+          ListTile(
+            leading: const Icon(Icons.payment),
+            title: const Text('Orders'),
+            onTap: () {
+              Navigator.of(context)
+                  .pushReplacementNamed(OrdersScreen.routeName);
+            },
+          )
+        ],
+      ),
+    );
+  }
+}
