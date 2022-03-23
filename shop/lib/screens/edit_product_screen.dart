@@ -17,13 +17,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
   final _imageUrlController = TextEditingController();
   final _imageUrlFocus = FocusNode();
   final _form = GlobalKey<FormState>();
-  var _editedProduct = Product(
+  Product _editedProduct = Product(
     id: '',
     title: '',
     description: '',
-    price: 0,
+    price: 0.0,
     imageUrl: '',
   );
+  Map initialValues = {
+    'title': '',
+    'price': '',
+    'description': '',
+  };
 
   @override
   void initState() {
@@ -34,10 +39,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
   void _imageUrlListener() {
     if (!_imageUrlFocus.hasFocus) {
       if ((!_imageUrlController.text.startsWith('http') &&
-              !_imageUrlController.text.startsWith('https')) ||
-          (!_imageUrlController.text.endsWith('.png') &&
-              !_imageUrlController.text.endsWith('.jpg') &&
-              !_imageUrlController.text.endsWith('.jpeg'))) {
+          !_imageUrlController.text.startsWith('https'))) {
         return;
       }
       setState(() {});
@@ -63,6 +65,28 @@ class _EditProductScreenState extends State<EditProductScreen> {
     Navigator.pop(context);
   }
 
+  bool init = true;
+
+  @override
+  void didChangeDependencies() {
+    final productId = ModalRoute.of(context)?.settings.arguments as String;
+    if (init) {
+      if (productId != 'p0') {
+        _editedProduct =
+            Provider.of<Products>(context, listen: false).findById(productId);
+        initialValues = {
+          'title': _editedProduct.title,
+          'price': _editedProduct.price.toString(),
+          'description': _editedProduct.description,
+          'imageUrl': '',
+        };
+        _imageUrlController.text = _editedProduct.imageUrl;
+      }
+      init = false;
+    }
+    super.didChangeDependencies();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -82,6 +106,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
           child: ListView(
             children: [
               TextFormField(
+                initialValue: initialValues['title'],
                 validator: (value) {
                   if (value!.isEmpty) {
                     return 'Please enter product title';
@@ -104,6 +129,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField(
+                initialValue: initialValues['price'],
                 decoration: const InputDecoration(labelText: 'Price'),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -134,6 +160,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 },
               ),
               TextFormField(
+                initialValue: initialValues['description'],
                 decoration: const InputDecoration(labelText: 'Description'),
                 validator: (value) {
                   if (value!.isEmpty) {
@@ -187,11 +214,6 @@ class _EditProductScreenState extends State<EditProductScreen> {
                         if (!value.startsWith('http') &&
                             !value.startsWith('https')) {
                           return 'Please enter a valid url address';
-                        }
-                        if (!value.endsWith('.png') &&
-                            !value.endsWith('.jpg') &&
-                            !value.endsWith('.jpeg')) {
-                          return 'Please enter a valid Url address';
                         }
                         return null;
                       },
