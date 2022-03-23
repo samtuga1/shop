@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:shop/screens/edit_product_screen.dart';
 
 class UserProductItem extends StatelessWidget {
   final String title;
+  final String id;
   final String imageUrl;
-  const UserProductItem({Key? key, required this.title, required this.imageUrl})
+  const UserProductItem({Key? key, required this.title, required this.imageUrl, required this.id})
       : super(key: key);
 
   @override
@@ -17,7 +19,10 @@ class UserProductItem extends StatelessWidget {
         width: 100,
         child: Row(children: [
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.of(context)
+                  .pushNamed(EditProductScreen.id, arguments: id);
+            },
             icon: const Icon(Icons.edit),
             color: Theme.of(context).primaryColor,
           ),
