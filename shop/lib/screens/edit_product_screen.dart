@@ -56,7 +56,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     super.dispose();
   }
 
-  void _saveForm() {
+  void _saveForm() async {
     final productId = ModalRoute.of(context)?.settings.arguments as String;
     final isValid = _form.currentState!.validate();
     if (!isValid) {
@@ -78,14 +78,30 @@ class _EditProductScreenState extends State<EditProductScreen> {
       setState(() {
         isLoading = true;
       });
-      Provider.of<Products>(context, listen: false)
-          .addProduct(_editedProduct)
-          .then((_) {
+      try{
+        await Provider.of<Products>(context, listen: false)
+          .addProduct(_editedProduct);
+      }catch(error){
+       await showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+                  title: const Text('An error occurred'),
+                  content: const Text('Something went wrong'),
+                  actions: [
+                    FlatButton(
+                      child: const Text('Okay'),
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                      },
+                    )
+                  ],
+                ));
+      } finally{
         setState(() {
           isLoading = false;
         });
         Navigator.pop(context);
-      });
+      }
     }
   }
 
