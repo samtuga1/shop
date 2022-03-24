@@ -51,20 +51,23 @@ class Products with ChangeNotifier {
     return items.firstWhere((prod) => prod.id == id);
   }
 
-  Future<void> addProduct(Product product) {
-    const url = 'https://shop-12901-default-rtdb.firebaseio.com/products.json';
-    return http
-        .post(Uri.parse(url),
-            body: json.encode({
-              'title': product.title,
-              'description': product.description,
-              'price': product.price,
-              'imageUrl': product.imageUrl,
-              'isFavorite': product.isFavorite,
-            }))
-        .then((respose) {
+  Future<void> addProduct(Product product) async {
+    const url = 'https://shop-12901-default-rtdb.firebaseio.com/products';
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        body: json.encode(
+          {
+            'title': product.title,
+            'description': product.description,
+            'price': product.price,
+            'imageUrl': product.imageUrl,
+            'isFavorite': product.isFavorite,
+          },
+        ),
+      );
       final newProduct = Product(
-        id: json.decode(respose.body)['name'],
+        id: json.decode(response.body)['name'],
         title: product.title,
         description: product.description,
         price: product.price,
@@ -72,12 +75,19 @@ class Products with ChangeNotifier {
       );
       _items.add(newProduct);
       notifyListeners();
-    });
+    } catch (error) {
+      print(error);
+      throw error;
+    }
+    // .then((respose) {
+    // }).catchError((error) {
+    //
+    // });
   }
 
   void editSingleProduct(String id, Product product) {
-    int ProdIndex = _items.indexWhere((prod) => prod.id == id);
-    _items.insert(ProdIndex, product);
+    int prodIndex = _items.indexWhere((prod) => prod.id == id);
+    _items.insert(prodIndex, product);
   }
 
   void deleteSingleProduct(String id) {
