@@ -5,7 +5,7 @@ import '../providers/products.dart';
 
 class UserProductItem extends StatelessWidget {
   final String title;
-  final String id;
+  final String? id;
   final String imageUrl;
   const UserProductItem(
       {Key? key, required this.title, required this.imageUrl, required this.id})
@@ -13,6 +13,7 @@ class UserProductItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scaffold = ScaffoldMessenger.of(context);
     return ListTile(
       title: Text(title),
       leading: CircleAvatar(
@@ -30,9 +31,18 @@ class UserProductItem extends StatelessWidget {
             color: Theme.of(context).primaryColor,
           ),
           IconButton(
-            onPressed: () {
-              Provider.of<Products>(context, listen: false)
-                  .deleteSingleProduct(id);
+            onPressed: () async {
+              try {
+                await Provider.of<Products>(context, listen: false)
+                    .deleteSingleProduct(id);
+              } catch (error) {
+                scaffold.showSnackBar(const SnackBar(
+                  content: Text(
+                    'Deleting failed',
+                    textAlign: TextAlign.center,
+                  ),
+                ));
+              }
             },
             icon: const Icon(Icons.delete),
             color: Theme.of(context).errorColor,
