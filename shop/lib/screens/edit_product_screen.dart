@@ -21,7 +21,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
     id: '',
     title: '',
     description: '',
-    price: 0.0,
+    price: 0,
     imageUrl: '',
   );
   Map initialValues = {
@@ -63,26 +63,19 @@ class _EditProductScreenState extends State<EditProductScreen> {
       return;
     }
     _form.currentState?.save();
-    if (productId != 'p0') {
-      setState(() {
-        isLoading = true;
-      });
-      Provider.of<Products>(context)
-          .editSingleProduct(_editedProduct.id, _editedProduct);
-      setState(() {
-        isLoading = false;
-      });
-
-      Navigator.of(context).pop();
+    setState(() {
+      isLoading = true;
+    });
+    if (productId != 'p0') { 
+              await Provider.of<Products>(context, listen: false)
+            .editSingleProduct(_editedProduct.id, _editedProduct);
+      
     } else {
-      setState(() {
-        isLoading = true;
-      });
-      try{
+      try {
         await Provider.of<Products>(context, listen: false)
-          .addProduct(_editedProduct);
-      }catch(error){
-       await showDialog(
+            .addProduct(_editedProduct);
+      } catch (error) {
+        await showDialog(
             context: context,
             builder: (ctx) => AlertDialog(
                   title: const Text('An error occurred'),
@@ -96,13 +89,18 @@ class _EditProductScreenState extends State<EditProductScreen> {
                     )
                   ],
                 ));
-      } finally{
-        setState(() {
-          isLoading = false;
-        });
-        Navigator.pop(context);
       }
+      // finally{
+      //   setState(() {
+      //     isLoading = false;
+      //   });
+      //   Navigator.pop(context);
+      // }
     }
+    setState(() {
+      isLoading = false;
+    });
+    Navigator.of(context).pop();
   }
 
   bool init = true;
