@@ -56,8 +56,7 @@ class Products with ChangeNotifier {
     const url = 'https://shop-12901-default-rtdb.firebaseio.com/products.json';
     try {
       final response = await http.get(Uri.parse(url));
-      var extractedResponse =
-          json.decode(response.body) as Map<String, dynamic>;
+      var extractedResponse = json.decode(response.body) as Map<String, dynamic>;
       List<Product> loadedProducts = [];
       extractedResponse.forEach((prodId, product) {
         loadedProducts.add(
