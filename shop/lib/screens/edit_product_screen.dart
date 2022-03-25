@@ -66,10 +66,9 @@ class _EditProductScreenState extends State<EditProductScreen> {
     setState(() {
       isLoading = true;
     });
-    if (productId != 'p0') { 
-              await Provider.of<Products>(context, listen: false)
-            .editSingleProduct(_editedProduct.id, _editedProduct);
-      
+    if (productId != 'p0') {
+      await Provider.of<Products>(context, listen: false)
+          .editSingleProduct(_editedProduct.id, _editedProduct);
     } else {
       try {
         await Provider.of<Products>(context, listen: false)
@@ -162,7 +161,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       },
                       onSaved: (value) {
                         _editedProduct = Product(
-                          id: DateTime.now().toString(),
+                          id: _editedProduct.id,
                           title: value!,
                           description: _editedProduct.description,
                           price: _editedProduct.price,
@@ -193,7 +192,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       },
                       onSaved: (value) {
                         _editedProduct = Product(
-                          id: DateTime.now().toString(),
+                          id: _editedProduct.id,
                           title: _editedProduct.title,
                           description: _editedProduct.description,
                           price: double.parse(value!),
@@ -219,7 +218,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                       focusNode: _descriptionNode,
                       onSaved: (value) {
                         _editedProduct = Product(
-                          id: DateTime.now().toString(),
+                          id: _editedProduct.id,
                           title: _editedProduct.title,
                           description: value!,
                           price: _editedProduct.price,
@@ -271,7 +270,7 @@ class _EditProductScreenState extends State<EditProductScreen> {
                             },
                             onSaved: (value) {
                               _editedProduct = Product(
-                                id: DateTime.now().toString(),
+                                id: _editedProduct.id,
                                 title: _editedProduct.title,
                                 description: _editedProduct.description,
                                 price: _editedProduct.price,
