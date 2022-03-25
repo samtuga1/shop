@@ -41,17 +41,7 @@ class CartScreen extends StatelessWidget {
                     ),
                     backgroundColor: Theme.of(context).primaryColor,
                   ),
-                  FlatButton(
-                    onPressed: () {
-                      Provider.of<Orders>(context, listen: false).addOrder(
-                          cart.totalAmount, cart.items.values.toList());
-                      cart.clear();
-                    },
-                    child: Text(
-                      'ORDER NOW',
-                      style: TextStyle(color: Theme.of(context).primaryColor),
-                    ),
-                  )
+                  OrderButton(cart: cart)
                 ],
               ),
             ),
@@ -70,6 +60,49 @@ class CartScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class OrderButton extends StatefulWidget {
+  OrderButton({
+    Key? key,
+    required this.cart,
+  }) : super(key: key);
+
+  final Cart cart;
+  bool isLoading = false;
+
+  @override
+  State<OrderButton> createState() => _OrderButtonState();
+}
+
+class _OrderButtonState extends State<OrderButton> {
+  @override
+  Widget build(BuildContext context) {
+    return FlatButton(
+      onPressed: widget.cart.totalAmount == 0
+          ? null
+          : () async {
+              setState(() {
+                widget.isLoading = true;
+              });
+              await Provider.of<Orders>(context, listen: false).addOrder(
+                  widget.cart.totalAmount, widget.cart.items.values.toList());
+              setState(() {
+                widget.isLoading = false;
+              });
+              widget.cart.clear();
+            },
+      child: widget.isLoading
+          ? const CircularProgressIndicator()
+          : Text(
+              'ORDER NOW',
+              style: TextStyle(
+                  color: widget.cart.totalAmount == 0
+                      ? Theme.of(context).disabledColor
+                      : Theme.of(context).primaryColor),
+            ),
     );
   }
 }
