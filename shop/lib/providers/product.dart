@@ -1,7 +1,11 @@
 import 'package:flutter/foundation.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
+import 'package:shop/models/http_exception.dart';
 
 class Product with ChangeNotifier {
-  final String id;
+  final String? id;
   final String title;
   final String description;
   final double price;
@@ -9,7 +13,7 @@ class Product with ChangeNotifier {
   bool isFavorite;
 
   Product({
-    required this.id,
+    this.id,
     required this.title,
     required this.description,
     required this.price,
@@ -17,8 +21,24 @@ class Product with ChangeNotifier {
     this.isFavorite = false,
   });
 
-  void toggleFavoriteStatus() {
+  Future<void> toggleFavoriteStatus() async {
+    bool existingProductLikeStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
+    final url =
+        'https://shop-12901-default-rtdb.firebaseio.com/products/$id.json';
+    final response = await http.patch(
+      Uri.parse(url),
+      body: json.encode(
+        {
+          'isFavorite': isFavorite,
+        },
+      ),
+    );
+    if (response.statusCode >= 400) {
+      isFavorite = existingProductLikeStatus;
+      notifyListeners();
+      throw HttpException('An error occured');
+    }
   }
 }
