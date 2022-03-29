@@ -14,14 +14,16 @@ class OrdersScreen extends StatefulWidget {
 
 class _OrdersScreenState extends State<OrdersScreen> {
   late Future ordersFuture;
-  Future returnOrderFuture(){
+  Future returnOrderFuture() {
     return Provider.of<Orders>(context, listen: false).fetchAndSet();
   }
+
   @override
   void initState() {
     ordersFuture = returnOrderFuture();
     super.initState();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
