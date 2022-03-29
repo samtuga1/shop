@@ -13,42 +13,46 @@ class OrdersScreen extends StatefulWidget {
 }
 
 class _OrdersScreenState extends State<OrdersScreen> {
-  bool isInit = true;
-  bool isLoading = false;
-
-  Future<void> fetchData() async {
-    final orderData = Provider.of<Orders>(context, listen: false);
-    setState(() {
-      isLoading = true;
-    });
-    await orderData.fetchAndSet();
-    setState(() {
-      isLoading = false;
-    });
+  late Future ordersFuture;
+  Future returnOrderFuture(){
+    return Provider.of<Orders>(context, listen: false).fetchAndSet();
   }
-
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (isInit) {
-      fetchData();
-    }
-    isInit = false;
+  void initState() {
+    ordersFuture = returnOrderFuture();
+    super.initState();
   }
-
   @override
   Widget build(BuildContext context) {
-    final orderData = Provider.of<Orders>(context);
     return Scaffold(
       drawer: const AppDrawer(),
       appBar: AppBar(
         title: const Text('Your Orders'),
       ),
-      body: isLoading ? const Center(child: CircularProgressIndicator(),) : ListView.builder(
-        itemCount: orderData.orders.length,
-        itemBuilder: (ctx, i) => ord.OrderItem(
-          order: orderData.orders[i],
-        ),
+      body: FutureBuilder(
+        future: ordersFuture,
+        builder: (ctx, dataSnapshot) {
+          if (dataSnapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          } else {
+            if (dataSnapshot.error != null) {
+              return const Center(
+                child: Text('Has Error'),
+              );
+            } else {
+              return Consumer<Orders>(builder: ((context, orderData, child) {
+                return ListView.builder(
+                  itemCount: orderData.orders.length,
+                  itemBuilder: (ctx, i) => ord.OrderItem(
+                    order: orderData.orders[i],
+                  ),
+                );
+              }));
+            }
+          }
+        },
       ),
     );
   }
