@@ -6,8 +6,8 @@ import 'package:shop/models/http_exception.dart';
 
 class Auth with ChangeNotifier {
   late String _userId;
-  late DateTime? _expiryDate;
-  late String? _token;
+  DateTime? _expiryDate;
+  String? _token;
 
   bool get isAuth {
     return token != null;
@@ -39,7 +39,6 @@ class Auth with ChangeNotifier {
       );
       final responseData = json.decode(response.body);
       if (responseData['error'] != null) {
-        print(responseData['error']['message']);
         throw HttpException(responseData['error']['message']);
       }
       _token = responseData['idToken'];
