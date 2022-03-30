@@ -7,9 +7,10 @@ class Auth with ChangeNotifier {
   late DateTime _expiryDate;
   late String _token;
 
-  Future<void> signUp(String? email, String? password) async {
-    const url =
-        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBNuSkRyNNyCzsdLBmJQ62CfqxhpYsoEUM';
+  Future<void> _authentification(
+      String? email, String? password, String signType) async {
+    final url =
+        'https://identitytoolkit.googleapis.com/v1/accounts:$signType?key=AIzaSyBNuSkRyNNyCzsdLBmJQ62CfqxhpYsoEUM';
     final response = await http.post(
       Uri.parse(url),
       body: json.encode(
@@ -20,10 +21,15 @@ class Auth with ChangeNotifier {
         },
       ),
     );
-    if (response.statusCode != 200) {
-      return;
-    } else {
-      print(json.decode(response.body));
-    }
+
+    print(json.decode(response.body));
+  }
+
+  Future<void> signUp(String? email, String? password) async {
+   return _authentification(email, password, 'signUp');
+  }
+
+  Future<void> login(String? email, String? password) async {
+   return _authentification(email, password, 'signInWithPassword');
   }
 }
