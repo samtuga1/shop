@@ -7,4 +7,5 @@ class HttpException implements Exception {
   String toString() {
     return message;
   }
+ 
 }
