@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
+import 'package:shop/models/http_exception.dart';
 import 'package:shop/providers/auth.dart';
 
 enum AuthMode { Signup, Login }
@@ -95,6 +96,24 @@ class AuthCard extends StatefulWidget {
 }
 
 class _AuthCardState extends State<AuthCard> {
+  void showErrorAlertDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Error'),
+        content: Text(message),
+        actions: [
+          FlatButton(
+            child: const Text('Okay'),
+            onPressed: () {
+              Navigator.of(ctx).pop();
+            },
+          )
+        ],
+      ),
+    );
+  }
+
   final GlobalKey<FormState> _formKey = GlobalKey();
   AuthMode _authMode = AuthMode.Login;
   Map<String, String> _authData = {
@@ -113,15 +132,33 @@ class _AuthCardState extends State<AuthCard> {
     setState(() {
       _isLoading = true;
     });
-    if (_authMode == AuthMode.Login) {
-      // Log user in
-      await Provider.of<Auth>(context, listen: false)
-          .login(_authData['email'], _authData['password']);
-    } else {
-      // Sign user up
-      await Provider.of<Auth>(context, listen: false)
-          .signUp(_authData['email'], _authData['password']);
+    try {
+      if (_authMode == AuthMode.Login) {
+        // Log user in
+        await Provider.of<Auth>(context, listen: false)
+            .login(_authData['email'], _authData['password']);
+      } else {
+        // Sign user up
+        await Provider.of<Auth>(context, listen: false)
+            .signUp(_authData['email'], _authData['password']);
+      }
+    } on HttpException catch (error) {
+      var errorMessage = 'Authentification failed';
+      if (error.toString().contains('EMAIL_EXISTS')) {
+        errorMessage = 'Email already exists';
+      } else if (error.toString().contains('INVALID_EMAIL')) {
+        errorMessage = 'Email is not a valid one';
+      } else if (error.toString().contains('USER_NOT_FOUND')) {
+        errorMessage = 'User was not found';
+      } else if (error.toString().contains('EMAIL_NOT_FOUND')) {
+        errorMessage = 'Email was not found';
+      }
+      showErrorAlertDialog(errorMessage);
+    } catch (error) {
+      const errorMessage = 'Authentification failed, please try again later';
+      showErrorAlertDialog(errorMessage);
     }
+
     setState(() {
       _isLoading = false;
     });
