@@ -26,8 +26,7 @@ class Products with ChangeNotifier {
   }
 
   Future<void> getAndSetProducts(bool filterByUser) async {
-    final filterString =
-        filterByUser ? '&orderBy="creatorId"&equalTo="$userId"' : '';
+    final filterString = filterByUser ? '&orderBy="creatorId"&equalTo="$userId"' : '';
     var url =
         'https://shop-12901-default-rtdb.firebaseio.com/products.json/?auth=$authToken&$filterString';
     try {
@@ -37,8 +36,7 @@ class Products with ChangeNotifier {
       if (extractedResponse.isEmpty) {
         return;
       }
-      url =
-          'https://shop-12901-default-rtdb.firebaseio.com/userFavorites/$userId.json/?auth=$authToken';
+      url = 'https://shop-12901-default-rtdb.firebaseio.com/userFavorites/$userId.json/?auth=$authToken';
       final favoriteResponse = await http.get(Uri.parse(url));
       final favData = json.decode(favoriteResponse.body);
       List<Product> loadedProducts = [];
