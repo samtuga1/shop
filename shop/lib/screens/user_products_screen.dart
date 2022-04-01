@@ -15,7 +15,7 @@ class UserProductsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final productsData = Provider.of<Products>(context);
+    //final productsData = Provider.of<Products>(context);
     return Scaffold(
       drawer: const AppDrawer(),
       appBar: AppBar(
@@ -30,27 +30,32 @@ class UserProductsScreen extends StatelessWidget {
           )
         ],
       ),
-      body: RefreshIndicator(
+      body: FutureBuilder(
+        future: refreshProducts(context),
+        builder: (ctx, snapshot) => snapshot.connectionState == ConnectionState.waiting ? const Center(child: CircularProgressIndicator(),) : RefreshIndicator(
         onRefresh: () => refreshProducts(context),
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: ListView.builder(
-            itemCount: productsData.items.length,
-            itemBuilder: (_, i) => Column(
-              children: [
-                UserProductItem(
-                  id: productsData.items[i].id,
-                  imageUrl: productsData.items[i].imageUrl,
-                  title: productsData.items[i].title,
-                ),
-                const Divider(
-                  indent: 60,
-                )
-              ],
+        child: Consumer<Products>(
+          builder: ((ctx, productsData, child) => 
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: ListView.builder(
+              itemCount: productsData.items.length,
+              itemBuilder: (_, i) => Column(
+                children: [
+                  UserProductItem(
+                    id: productsData.items[i].id,
+                    imageUrl: productsData.items[i].imageUrl,
+                    title: productsData.items[i].title,
+                  ),
+                  const Divider(
+                    indent: 60,
+                  )
+                ],
+              ),
             ),
-          ),
+          )),
         ),
       ),
-    );
+    ));
   }
 }
