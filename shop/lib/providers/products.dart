@@ -8,8 +8,9 @@ class Products with ChangeNotifier {
   List<Product>? _items = [];
 
   String? authToken;
+  String? userId;
 
-  Products(this.authToken, this._items);
+  Products(this.authToken, this.userId, this._items);
   Products.diffConstructor();
 
   List<Product> get favoriteItems {
@@ -24,24 +25,32 @@ class Products with ChangeNotifier {
     return items.firstWhere((prod) => prod.id == id);
   }
 
-  Future<void> getAndSetProducts() async {
-    final url =
-        'https://shop-12901-default-rtdb.firebaseio.com/products.json/?auth=$authToken';
+  Future<void> getAndSetProducts(bool filterByUser) async {
+    final filterString =
+        filterByUser ? '&orderBy="creatorId"&equalTo="$userId"' : '';
+    var url =
+        'https://shop-12901-default-rtdb.firebaseio.com/products.json/?auth=$authToken&$filterString';
     try {
       final response = await http.get(Uri.parse(url));
       var extractedResponse =
           json.decode(response.body) as Map<String, dynamic>;
+      if (extractedResponse.isEmpty) {
+        return;
+      }
+      url =
+          'https://shop-12901-default-rtdb.firebaseio.com/userFavorites/$userId.json/?auth=$authToken';
+      final favoriteResponse = await http.get(Uri.parse(url));
+      final favData = json.decode(favoriteResponse.body);
       List<Product> loadedProducts = [];
       extractedResponse.forEach((prodId, product) {
         loadedProducts.add(
           Product(
-            id: prodId,
-            title: product['title'],
-            price: product['price'].toDouble(),
-            imageUrl: product['imageUrl'],
-            description: product['description'],
-            isFavorite: product['isFavorite'],
-          ),
+              id: prodId,
+              title: product['title'],
+              price: product['price'].toDouble(),
+              imageUrl: product['imageUrl'],
+              description: product['description'],
+              isFavorite: favData == null ? false : favData[prodId] ?? false),
         );
       });
       _items = loadedProducts;
@@ -52,7 +61,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    final url = 'https://shop-12901-default-rtdb.firebaseio.com/products.json/?auth=$authToken';
+    final url =
+        'https://shop-12901-default-rtdb.firebaseio.com/products.json/?auth=$authToken';
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -62,7 +72,7 @@ class Products with ChangeNotifier {
             'description': product.description,
             'price': product.price,
             'imageUrl': product.imageUrl,
-            'isFavorite': product.isFavorite,
+            'creatorId': userId
           },
         ),
       );
