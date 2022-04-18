@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shop/models/http_exception.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Auth with ChangeNotifier {
   late String? _userId;
@@ -55,9 +56,35 @@ class Auth with ChangeNotifier {
       );
       autoLogout();
       notifyListeners();
+      final prefs = await SharedPreferences.getInstance();
+      final userData = json.encode({
+        'token': _token,
+        'userId': _userId,
+        'expiryDate': _expiryDate!.toIso8601String(),
+      });
+      prefs.setString('userData', userData);
     } catch (error) {
       rethrow;
     }
+  }
+
+  Future<bool> tryAutoLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      return false;
+    }
+    final extractedData =
+        json.decode(prefs.getString('userId')!) as Map<String, dynamic>;
+    final expiryDate = DateTime.parse(extractedData['expiryDate']);
+    if (expiryDate.isBefore(DateTime.now())) {
+      return false;
+    }
+    _token = extractedData['token'];
+    _userId = extractedData['userId'];
+    _expiryDate = expiryDate;
+    notifyListeners();
+    autoLogout();
+    return true;
   }
 
   Future<void> signUp(String? email, String? password) async {
@@ -68,7 +95,7 @@ class Auth with ChangeNotifier {
     return _authentification(email, password, 'signInWithPassword');
   }
 
-  void logout() {
+  Future<void> logout() async {
     _token = null;
     _expiryDate = null;
     _userId = null;
@@ -77,13 +104,15 @@ class Auth with ChangeNotifier {
       _autoTimer = null;
     }
     notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    prefs.clear();
   }
 
   void autoLogout() {
-    var expiryTime = _expiryDate!.difference(DateTime.now()).inSeconds;
-    _autoTimer = Timer(Duration(seconds: expiryTime), logout);
     if (_autoTimer != null) {
       _autoTimer?.cancel();
     }
+    var expiryTime = _expiryDate!.difference(DateTime.now()).inSeconds;
+    _autoTimer = Timer(Duration(seconds: expiryTime), logout);
   }
 }
