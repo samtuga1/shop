@@ -24,10 +24,7 @@ class ProductItem extends StatelessWidget {
             Navigator.pushNamed(context, ProductDetailScreen.id,
                 arguments: product.id);
           },
-          child: Image.network(
-            product.imageUrl,
-            fit: BoxFit.cover,
-          ),
+          child: FadeInImage(image: NetworkImage(product.imageUrl,),placeholder: AssetImage(''), fit: BoxFit.cover,) 
         ),
         footer: GridTileBar(
           backgroundColor: Colors.black87,
