@@ -80,10 +80,10 @@ class Auth with ChangeNotifier {
   }
 
   void autoLogout() {
+    var expiryTime = _expiryDate!.difference(DateTime.now()).inSeconds;
+    _autoTimer = Timer(Duration(seconds: expiryTime), logout);
     if (_autoTimer != null) {
       _autoTimer?.cancel();
     }
-    var expiryTime = _expiryDate!.difference(DateTime.now()).inSeconds;
-    _autoTimer = Timer(Duration(seconds: expiryTime), logout);
   }
 }
