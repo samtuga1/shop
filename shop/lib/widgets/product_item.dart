@@ -20,12 +20,21 @@ class ProductItem extends StatelessWidget {
       borderRadius: BorderRadius.circular(10),
       child: GridTile(
         child: GestureDetector(
-          onTap: () {
-            Navigator.pushNamed(context, ProductDetailScreen.id,
-                arguments: product.id);
-          },
-          child: FadeInImage(image: NetworkImage(product.imageUrl,),placeholder: AssetImage(''), fit: BoxFit.cover,) 
-        ),
+            onTap: () {
+              Navigator.pushNamed(context, ProductDetailScreen.id,
+                  arguments: product.id);
+            },
+            child: Hero(
+              tag: product.id!,
+              child: FadeInImage(
+                image: NetworkImage(
+                  product.imageUrl,
+                ),
+                placeholder:
+                    const AssetImage('assets/images/image-placeholder.png'),
+                fit: BoxFit.cover,
+              ),
+            )),
         footer: GridTileBar(
           backgroundColor: Colors.black87,
           leading: Consumer<Product>(
