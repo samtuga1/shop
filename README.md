@@ -5,7 +5,7 @@ To clone this project, open your terminal or cmd
 cd folder/to/clone-into/
 ```
 ```
-git clone https://github.com/RegNex/WalletUiApp.git
+https://github.com/samtuga1/shop.git
 ```
 Then locate the project on your system and open with android studio or Vscode or intellij IDE.
 
@@ -22,7 +22,6 @@ Prerequisites
 ```
 Built With
 ```
-<a href='https://flutter.dev/'> Flutter </a>
 * Flutter
 * Vscode
 ```
