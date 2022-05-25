@@ -1,4 +1,3 @@
-This project is a starting point for a Flutter application.
 
 I used firebase authentification to authenticate users
 
