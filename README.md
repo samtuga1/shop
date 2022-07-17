@@ -1,5 +1,5 @@
 
-I used firebase authentification to authenticate users
+I used firebase to authenticate users
 
 I used firebase realtime storage to store all my necessary data such as products, orders and more
 
