@@ -3,7 +3,7 @@ I used firebase to authenticate users
 
 I used firebase realtime storage to store all my necessary data such as products, orders and more
 
-I used Sharedpreferences package to store the user token, User ID and expiry time firebase gives every user so that the user can automatically login the app
+I used Sharedpreferences package to store the user token, User ID and expiry time firebase gives every user so that users can automatically login the app
 
 
 ![1](https://user-images.githubusercontent.com/79772304/163966120-5c6cf55d-e5b2-4f55-a3c7-9b4c987efd1d.png)
